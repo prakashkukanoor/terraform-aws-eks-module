@@ -28,3 +28,18 @@ variable "private_subnets" {
   type    = list(string)
   default = []
 }
+
+variable "node_group_name" {
+  type    = string
+  default = "general"
+}
+
+variable "capacity_type" {
+  type    = string
+  default = "ON_DEMAND"
+}
+
+variable "instance_types" {
+  type    = string
+  default = "t2.micro"
+}

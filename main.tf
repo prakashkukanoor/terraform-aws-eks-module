@@ -4,6 +4,7 @@ locals {
     managedBy   = var.team
     createdBy   = "terraform"
   }
+  cluster_name = "${var.cluster_name}-${var.environment}"
 
   #   applications_data = flatten([
   #     for domain_name, domain_data in var.applications : [
@@ -18,7 +19,7 @@ locals {
 }
 
 resource "aws_iam_role" "cluster" {
-  name = "${var.cluster_name}-${var.environment}-eks-cluster-role"
+  name = "${locals.cluster_name}-eks-cluster-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -42,7 +43,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 }
 
 resource "aws_iam_role" "node" {
-  name = "${var.cluster_name}-${var.environment}-eks-node-role"
+  name = "${locals.cluster_name}-eks-node-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -57,18 +58,23 @@ resource "aws_iam_role" "node" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "node_AmazonEKSWorkerNodeMinimalPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodeMinimalPolicy"
+resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node.name
 }
 
-resource "aws_iam_role_policy_attachment" "node_AmazonEC2ContainerRegistryPullOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.node.name
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.node.name
 }
 
 resource "aws_eks_cluster" "cluster" {
-  name     = "${var.cluster_name}-${var.environment}-cluster"
+  name     = "${locals.cluster_name}-cluster"
   role_arn = aws_iam_role.cluster.arn
   version  = var.eks_version
 
@@ -88,4 +94,36 @@ resource "aws_eks_cluster" "cluster" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
   ]
 
+}
+
+resource "aws_eks_node_group" "nodes" {
+  cluster_name    = aws_eks_cluster.cluster.name
+  node_group_name = var.node_group_name
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = var.private_subnets[*].id
+
+  scaling_config {
+    desired_size = 1
+    max_size     = 2
+    min_size     = 1
+  }
+
+  capacity_type = var.capacity_type
+  instance_types = var.instance_types
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
+    aws_iam_role_policy_attachment.amazon_eks_cni_policy,
+    aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
+  ]
+
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
 }
