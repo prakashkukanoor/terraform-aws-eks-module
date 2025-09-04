@@ -108,7 +108,7 @@ resource "aws_eks_node_group" "nodes" {
     min_size     = 1
   }
 
-  capacity_type = var.capacity_type
+  capacity_type  = var.capacity_type
   instance_types = var.instance_types
 
   update_config {

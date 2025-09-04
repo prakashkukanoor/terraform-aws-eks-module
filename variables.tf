@@ -40,6 +40,6 @@ variable "capacity_type" {
 }
 
 variable "instance_types" {
-  type    = string
-  default = "t2.micro"
+  type    = list(string)
+  default = ["t2.micro"]
 }
