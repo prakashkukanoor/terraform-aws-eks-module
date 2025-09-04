@@ -103,9 +103,9 @@ resource "aws_eks_node_group" "nodes" {
   subnet_ids      = var.private_subnets[*].id
 
   scaling_config {
-    desired_size = 1
-    max_size     = 2
-    min_size     = 1
+    desired_size = var.node_group_desired_size
+    max_size     = var.node_group_max_size
+    min_size     = var.node_group_min_size
   }
 
   capacity_type  = var.capacity_type
