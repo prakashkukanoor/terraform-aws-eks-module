@@ -58,7 +58,3 @@ variable "node_group_min_size" {
   type    = number
   default = 1
 }
-
-variable "cluster_name" {
-  type = string
-}
