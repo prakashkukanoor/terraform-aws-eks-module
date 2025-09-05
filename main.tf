@@ -19,7 +19,7 @@ locals {
 }
 
 resource "aws_iam_role" "cluster" {
-  name = "${locals.cluster_name}-eks-cluster-role"
+  name = "${local.cluster_name}-eks-cluster-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -43,7 +43,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 }
 
 resource "aws_iam_role" "node" {
-  name = "${locals.cluster_name}-eks-node-role"
+  name = "${local.cluster_name}-eks-node-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -74,7 +74,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
 }
 
 resource "aws_eks_cluster" "cluster" {
-  name     = "${locals.cluster_name}-cluster"
+  name     = "${local.cluster_name}-cluster"
   role_arn = aws_iam_role.cluster.arn
   version  = var.eks_version
 
