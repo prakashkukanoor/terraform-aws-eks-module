@@ -39,7 +39,7 @@ variable "capacity_type" {
   default = "ON_DEMAND"
 }
 
-variable "instance_types" {
+variable "worker_node_instance_types" {
   type    = list(string)
   default = ["t2.micro"]
 }

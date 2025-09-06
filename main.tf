@@ -109,7 +109,7 @@ resource "aws_eks_node_group" "nodes" {
   }
 
   capacity_type  = var.capacity_type
-  instance_types = var.instance_types
+  instance_types = var.worker_node_instance_types
 
   update_config {
     max_unavailable = 1
