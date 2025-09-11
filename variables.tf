@@ -34,15 +34,15 @@ variable "node_group_name" {
   default = "general"
 }
 
-variable "capacity_type" {
-  type    = string
-  default = "ON_DEMAND"
-}
+# variable "capacity_type" {
+#   type    = string
+#   default = "ON_DEMAND"
+# }
 
-variable "worker_node_instance_types" {
-  type    = list(string)
-  default = ["t2.micro"]
-}
+# variable "worker_node_instance_types" {
+#   type    = list(string)
+#   default = ["t2.micro"]
+# }
 
 variable "node_group_desired_size" {
   type    = number
@@ -58,3 +58,15 @@ variable "node_group_min_size" {
   type    = number
   default = 1
 }
+
+variable "filter_name" {
+  type    = string
+  default = "al2023-ami-2023.*-x86_64"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+

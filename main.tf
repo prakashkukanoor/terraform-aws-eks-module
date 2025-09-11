@@ -100,6 +100,29 @@ resource "aws_eks_cluster" "cluster" {
 
 }
 
+data "aws_ami" "eks_nodes" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = [var.filter_name]
+  }
+}
+
+resource "aws_launch_template" "eks_nodes" {
+  image_id      = data.aws_ami.eks_nodes.id
+  instance_type = var.instance_type
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = merge(
+    local.common_tags,
+  { Name = "eks-node-${var.eks_version}-${var.environment}" })
+  }
+}
+
+
 resource "aws_eks_node_group" "nodes" {
   cluster_name    = aws_eks_cluster.cluster.name
   node_group_name = var.node_group_name
@@ -112,9 +135,14 @@ resource "aws_eks_node_group" "nodes" {
     min_size     = var.node_group_min_size
   }
 
-  capacity_type  = var.capacity_type
-  instance_types = var.worker_node_instance_types
+#   capacity_type  = var.capacity_type
+#   instance_types = var.worker_node_instance_types
 
+  launch_template {
+    id      = aws_launch_template.eks_nodes.id
+    version = "$Latest"
+  }
+  
   update_config {
     max_unavailable = 1
   }
