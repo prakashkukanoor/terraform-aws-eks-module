@@ -90,6 +90,10 @@ resource "aws_eks_cluster" "cluster" {
     bootstrap_cluster_creator_admin_permissions = true
   }
 
+  tags = merge(
+    local.common_tags,
+  { Name = "EKS-Nodes-${var.eks_version}-${var.environment}" })
+
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
   ]
