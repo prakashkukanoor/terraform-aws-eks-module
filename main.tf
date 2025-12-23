@@ -77,6 +77,9 @@ resource "aws_eks_cluster" "cluster" {
   name     = "${local.cluster_name}-cluster"
   role_arn = aws_iam_role.cluster.arn
   version  = var.eks_version
+  upgrade_policy {
+    support_type = "STANDARD"
+  }
 
   vpc_config {
     endpoint_private_access = false
