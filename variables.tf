@@ -14,6 +14,10 @@ variable "eks_version" {
   default = "1.33"
 }
 
+variable "vpc_id" {
+  type    = string
+}
+
 variable "cluster_name" {
   type    = string
   default = "amazon-eks-cluster"

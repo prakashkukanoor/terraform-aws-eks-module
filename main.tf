@@ -111,6 +111,11 @@ resource "aws_eks_node_group" "nodes" {
     min_size     = var.node_group_min_size
   }
 
+  launch_template {
+    id      = aws_launch_template.eks_nodes_custom_sg.id
+    version = "$Latest"
+  }
+
   capacity_type  = var.capacity_type
   instance_types = var.worker_node_instance_types
 
@@ -129,4 +134,29 @@ resource "aws_eks_node_group" "nodes" {
   lifecycle {
     ignore_changes = [scaling_config[0].desired_size]
   }
+}
+
+resource "aws_security_group" "eks_nodes_allow_nlb" {
+  name        = "eks-node-allow-nlb-sg-${var.environment}"
+  description = "Security group to allow NLB traffic to eks cluster"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name                                     = "eks-node-allow-nlb-sg-${var.environment}"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned" # Mandatory tag
+  }
+}
+
+resource "aws_launch_template" "eks_nodes_custom_sg" {
+  name_prefix = "eks-nodes-template-${var.environment}"
+  
+  vpc_security_group_ids = [aws_security_group.eks_nodes_allow_nlb.id]
+
 }
