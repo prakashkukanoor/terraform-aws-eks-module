@@ -111,10 +111,10 @@ resource "aws_eks_node_group" "nodes" {
     min_size     = var.node_group_min_size
   }
 
-  launch_template {
-    id      = aws_launch_template.eks_nodes_custom_sg.id
-    version = "$Latest"
-  }
+  # launch_template {
+  #   id      = aws_launch_template.eks_nodes_custom_sg.id
+  #   version = "$Latest"
+  # }
 
   capacity_type  = var.capacity_type
   instance_types = var.worker_node_instance_types
