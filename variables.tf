@@ -23,3 +23,19 @@ variable "eks_version" {
 variable "eks_private_subnets" {
     type = list(string)
 }
+
+variable "instance_type" {
+  type = string
+}
+
+variable "eks_worker_node_desired_capacity" {
+  type = number
+}
+
+variable "eks_worker_node_min_size" {
+  type = number
+}
+
+variable "eks_worker_node_max_size" {
+  type = number
+}
