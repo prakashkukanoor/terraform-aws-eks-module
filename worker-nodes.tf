@@ -3,7 +3,7 @@ data "aws_ssm_parameter" "eks_ami" {
 }
 
 resource "aws_launch_template" "eks_nodes" {
-  name                   = "${var.cluster_name}-node-template"
+  name                   = "${var.cluster_name}-eks${var.eks_version}-node-template"
   instance_type          = var.instance_type
   image_id               = data.aws_ssm_parameter.eks_ami.value
   vpc_security_group_ids = [aws_eks_cluster.this.vpc_config[0].cluster_security_group_id]
@@ -19,7 +19,7 @@ resource "aws_launch_template" "eks_nodes" {
     resource_type = "instance"
     tags = merge(
     local.common_tags,
-    {Name = "${var.cluster_name}-${var.eks_version}-worker-node-${var.environment}"}
+    {Name = "${var.cluster_name}-eks${var.eks_version}-node-${var.environment}"}
     )
   }
 }
