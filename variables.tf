@@ -18,14 +18,8 @@ variable "applications" {
 
 variable "eks_version" {
     type = string
-    default = "1.33"
 }
 
 variable "eks_private_subnets" {
     type = list(string)
-}
-
-variable "vpc_id" {
-    type = string
-  
 }

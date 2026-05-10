@@ -9,7 +9,6 @@ resource "aws_eks_cluster" "this" {
   version  = var.eks_version
 
   vpc_config {
-    vpc_id = var.vpc_id
     endpoint_private_access = true
     endpoint_public_access  = false
 
