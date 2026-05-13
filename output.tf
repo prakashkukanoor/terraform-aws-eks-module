@@ -22,3 +22,8 @@ output "node_group_name" {
   description = "Name of the EKS node group"
   value       = aws_autoscaling_group.eks_nodes.name
 }
+
+output "configure_kubectl" {
+  description = "Command to configure kubectl"
+  value       = "aws eks get-token --cluster-name ${aws_eks_cluster.this.name} | kubectl apply -f -"
+}
