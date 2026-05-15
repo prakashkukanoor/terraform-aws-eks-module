@@ -8,11 +8,16 @@ resource "aws_launch_template" "eks_nodes" {
   image_id               = data.aws_ssm_parameter.eks_ami.value
   vpc_security_group_ids = [aws_eks_cluster.this.vpc_config[0].cluster_security_group_id]
 
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    set -o xtrace
-    /etc/eks/bootstrap.sh ${local.cluster_full_name}
-  EOF
+  user_data = base64encode(<<-EOT
+    ---
+    apiVersion: node.eks.aws/v1alpha1
+    kind: NodeConfig
+    spec:
+      cluster:
+        name: ${local.cluster_full_name}
+        apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
+        certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
+  EOT
   )
 
   tag_specifications {
