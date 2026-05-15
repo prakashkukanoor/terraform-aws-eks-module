@@ -18,8 +18,8 @@ resource "aws_launch_template" "eks_nodes" {
   tag_specifications {
     resource_type = "instance"
     tags = merge(
-    local.common_tags,
-    {Name = "${local.cluster_full_name}-node"}
+      local.common_tags,
+      { Name = "${local.cluster_full_name}-node" }
     )
   }
 }
