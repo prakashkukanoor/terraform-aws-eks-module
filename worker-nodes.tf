@@ -3,7 +3,7 @@ data "aws_ssm_parameter" "eks_ami" {
 }
 
 resource "aws_launch_template" "eks_nodes" {
-  name                   = "${var.cluster_name}-eks${local.eks_version_tag}-node-template"
+  name                   = "${local.cluster_full_name}-node-template"
   instance_type          = var.instance_type
   image_id               = data.aws_ssm_parameter.eks_ami.value
   vpc_security_group_ids = [aws_eks_cluster.this.vpc_config[0].cluster_security_group_id]
@@ -11,7 +11,7 @@ resource "aws_launch_template" "eks_nodes" {
   user_data = base64encode(<<-EOF
     #!/bin/bash
     set -o xtrace
-    /etc/eks/bootstrap.sh ${var.cluster_name}
+    /etc/eks/bootstrap.sh ${local.cluster_full_name}
   EOF
   )
 
@@ -19,13 +19,13 @@ resource "aws_launch_template" "eks_nodes" {
     resource_type = "instance"
     tags = merge(
     local.common_tags,
-    {Name = "${var.cluster_name}-eks${local.eks_version_tag}-node-${var.environment}"}
+    {Name = "${local.cluster_full_name}-node"}
     )
   }
 }
 
 resource "aws_autoscaling_group" "eks_nodes" {
-  name                = "${var.cluster_name}-${var.eks_version}-node-asg-${var.environment}"
+  name                = "${local.cluster_full_name}-node-asg"
   desired_capacity    = var.eks_worker_node_desired_capacity
   max_size            = var.eks_worker_node_max_size
   min_size            = var.eks_worker_node_min_size
@@ -38,7 +38,7 @@ resource "aws_autoscaling_group" "eks_nodes" {
   }
 
   tag {
-    key                 = "kubernetes.io/cluster/${var.cluster_name}"
+    key                 = "kubernetes.io/cluster/${local.cluster_full_name}"
     value               = "owned"
     propagate_at_launch = true
   }

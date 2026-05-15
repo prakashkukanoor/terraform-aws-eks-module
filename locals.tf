@@ -6,6 +6,7 @@ locals {
   }
 
   eks_version_tag = join("-", split(".", var.eks_version))
+  cluster_full_name = "${var.cluster_name}-eks${local.eks_version_tag}-${var.environment}"
 
   applications_data = flatten([
     for domain_name, domain_data in var.applications : [
