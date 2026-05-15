@@ -24,6 +24,6 @@ output "node_group_name" {
 }
 
 output "configure_kubectl" {
-  description = "Command to configure kubectl"
-  value       = "aws eks get-token --cluster-name ${aws_eks_cluster.this.name} | kubectl apply -f -"
+  description = "Command to configure kubectl to connect to EKS"
+  value       = "aws eks update-kubeconfig --region <region> --name ${cluster_full_name} --profile <profile>"
 }
