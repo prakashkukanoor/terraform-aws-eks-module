@@ -37,9 +37,12 @@ resource "aws_autoscaling_group" "eks_nodes" {
     version = "$Latest"
   }
 
-  tag {
-    key                 = "kubernetes.io/cluster/${local.cluster_full_name}"
-    value               = "owned"
-    propagate_at_launch = true
+  dynamic "tag" {
+    for_each = local.cluster_asg_tags
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
   }
 }
