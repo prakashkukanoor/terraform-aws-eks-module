@@ -8,17 +8,22 @@ resource "aws_launch_template" "eks_nodes" {
   image_id               = data.aws_ssm_parameter.eks_ami.value
   vpc_security_group_ids = [aws_eks_cluster.this.vpc_config[0].cluster_security_group_id]
 
+  iam_instance_profile {
+    name = aws_iam_instance_profile.eks_node_profile.name
+  }
+  
   user_data = base64encode(<<-EOT
-    ---
-    apiVersion: node.eks.aws/v1alpha1
-    kind: NodeConfig
-    spec:
-      cluster:
-        name: ${local.cluster_full_name}
-        apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
-        certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
+  ---
+  apiVersion: node.eks.aws/v1alpha1
+  kind: NodeConfig
+  spec:
+    cluster:
+      name: ${local.cluster_full_name}
+      apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
+      certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
   EOT
   )
+
 
   tag_specifications {
     resource_type = "instance"
@@ -51,3 +56,15 @@ resource "aws_autoscaling_group" "eks_nodes" {
     }
   }
 }
+
+resource "aws_eks_access_entry" "this" {
+  cluster_name      = aws_eks_cluster.this.name
+  principal_arn     = aws_iam_role.eks_node_role.arn # The role attached to your EC2s
+  type              = "EC2_LINUX" # This is the "magic" switch for self-managed nodes
+}
+
+resource "aws_iam_instance_profile" "eks_node_profile" {
+  name = "${local.cluster_full_name}-node-profile"
+  role = aws_iam_role.eks_node_role.name # Matches the role in your access entry
+}
+
