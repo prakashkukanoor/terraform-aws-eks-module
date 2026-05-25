@@ -11,19 +11,28 @@ resource "aws_launch_template" "eks_nodes" {
   iam_instance_profile {
     name = aws_iam_instance_profile.eks_node_profile.name
   }
-  
+
   user_data = base64encode(<<-EOT
-  ---
-  apiVersion: node.eks.aws/v1alpha1
-  kind: NodeConfig
-  spec:
-    cluster:
-      name: ${local.cluster_full_name}
-      apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
-      certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
-      cidr: ${aws_eks_cluster.this.kubernetesNetworkConfig.serviceIpv4Cidr}
-  EOT
-  )
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+--BOUNDARY
+Content-Type: application/node.eks.aws
+
+---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: ${local.cluster_full_name}
+    apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
+    certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
+    cidr: ${aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr}
+
+--BOUNDARY--
+EOT
+)
+
 
 
   tag_specifications {
@@ -59,9 +68,9 @@ resource "aws_autoscaling_group" "eks_nodes" {
 }
 
 resource "aws_eks_access_entry" "this" {
-  cluster_name      = aws_eks_cluster.this.name
-  principal_arn     = aws_iam_role.eks_node_role.arn # The role attached to your EC2s
-  type              = "EC2_LINUX" # This is the "magic" switch for self-managed nodes
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = aws_iam_role.eks_node_role.arn # The role attached to your EC2s
+  type          = "EC2_LINUX"                    # This is the "magic" switch for self-managed nodes
 }
 
 resource "aws_iam_instance_profile" "eks_node_profile" {
