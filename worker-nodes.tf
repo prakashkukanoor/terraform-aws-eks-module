@@ -21,6 +21,7 @@ resource "aws_launch_template" "eks_nodes" {
       name: ${local.cluster_full_name}
       apiServerEndpoint: ${aws_eks_cluster.this.endpoint}
       certificateAuthority: ${aws_eks_cluster.this.certificate_authority[0].data}
+      cidr: ${aws_eks_cluster.this.kubernetesNetworkConfig.serviceIpv4Cidr}
   EOT
   )
 
