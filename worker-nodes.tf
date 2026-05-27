@@ -1,5 +1,5 @@
 data "aws_ssm_parameter" "eks_ami" {
-  name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.this.version}/amazon-linux-2023/x86_64/standard/recommended/image_id"
+  name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.this.version}/${var.ami_type}/recommended/image_id"
 }
 
 resource "aws_launch_template" "eks_nodes" {
