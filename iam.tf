@@ -53,3 +53,27 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_node_role.name
 }
+
+resource "aws_eks_access_entry" "std" {
+  for_each = {for iam in var.eks_iam_access: iam.principal_arn => iam.policy_arn}
+
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = each.key                      # The role attached to your EC2s
+  type          = "STANDARD"                    # This is the "magic" switch for self-managed nodes
+  tags = merge(
+    local.common_tags,
+  { Name = local.cluster_full_name })
+}
+
+# 2. Grant yourself Cluster Admin permissions
+resource "aws_eks_access_policy_association" "std" {
+  for_each = {for iam in var.eks_iam_access: iam.principal_arn => iam.policy_arn}
+
+  cluster_name  = aws_eks_cluster.this.name
+  policy_arn    = each.value
+  principal_arn = each.key
+
+  access_scope {
+    type = "cluster"
+  }
+}
