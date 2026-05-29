@@ -22,4 +22,10 @@ locals {
       }
     ]
   ])
+
+  user_role_policy_map = {
+    admin = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+    editor = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+    viewer = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  }
 }

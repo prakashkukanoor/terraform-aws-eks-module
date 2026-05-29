@@ -55,7 +55,7 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
 }
 
 resource "aws_eks_access_entry" "std" {
-  for_each = {for iam in var.eks_iam_access: iam.principal_arn => iam.policy_arn}
+  for_each = {for iam in var.eks_iam_access: iam.user_arn => iam.role}
 
   cluster_name  = aws_eks_cluster.this.name
   principal_arn = each.key                      # The role attached to your EC2s
@@ -67,10 +67,10 @@ resource "aws_eks_access_entry" "std" {
 
 # 2. Grant yourself Cluster Admin permissions
 resource "aws_eks_access_policy_association" "std" {
-  for_each = {for iam in var.eks_iam_access: iam.principal_arn => iam.policy_arn}
+  for_each = {for iam in var.eks_iam_access: iam.user_arn => iam.role}
 
   cluster_name  = aws_eks_cluster.this.name
-  policy_arn    = each.value
+  policy_arn    = local.user_role_policy_map[each.value]
   principal_arn = each.key
 
   access_scope {

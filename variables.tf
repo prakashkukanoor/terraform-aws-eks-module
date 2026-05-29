@@ -56,7 +56,7 @@ variable "ami_type" {
 
 variable "eks_iam_access" {
   type = list(object({
-    policy_arn = string
-    principal_arn = string
+    role = string
+    user_arn = string
   }))
 }

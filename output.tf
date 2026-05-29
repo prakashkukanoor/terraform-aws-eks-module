@@ -13,10 +13,10 @@ output "cluster_iam_role_name" {
   value       = aws_iam_role.cluster_role.name
 }
 
-output "cluster_certificate_authority_data" {
-  description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = aws_eks_cluster.this.certificate_authority[0].data
-}
+# output "cluster_certificate_authority_data" {
+#   description = "Base64 encoded certificate data required to communicate with the cluster"
+#   value       = aws_eks_cluster.this.certificate_authority[0].data
+# }
 
 output "node_group_name" {
   description = "Name of the EKS node group"
