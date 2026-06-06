@@ -54,13 +54,14 @@ variable "ami_type" {
   type = string
 }
 
-# variable "eks_iam_access" {
-#   type = list(object({
-#     role = string
-#     user_arn = string
-#   }))
-# }
+variable "eks_iam_user_access" {
+  type = object({
+    admin  = list(string)
+    editor = list(string)
+    viewer = list(string)
+  })
+}
 
-variable "console_user" {
+variable "aws_account_number" {
   type = string
 }

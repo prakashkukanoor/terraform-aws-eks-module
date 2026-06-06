@@ -78,17 +78,24 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
 #   }
 # }
 
-resource "aws_eks_access_entry" "console_admin" {
+resource "aws_eks_access_entry" "std" {
+  for_each = {for idx, user_role_obj in local.eks_user_access: user_role_obj.user => user_role_obj.role}
+
   cluster_name  = aws_eks_cluster.this.name
-  principal_arn = var.console_user # The role attached to your EC2s
+  principal_arn = "${local.iam_user_arn_format}${each.key}"                  # The role attached to your EC2s
   type          = "STANDARD"                    # This is the "magic" switch for self-managed nodes
+  tags = merge(
+    local.common_tags,
+  { Name = local.cluster_full_name })
 }
 
 # 2. Grant yourself Cluster Admin permissions
-resource "aws_eks_access_policy_association" "console_admin" {
+resource "aws_eks_access_policy_association" "std" {
+  for_each = {for idx, user_role_obj in local.eks_user_access: user_role_obj.user => user_role_obj.role}
+
   cluster_name  = aws_eks_cluster.this.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = var.console_user
+  policy_arn    = local.user_role_policy_map[each.value]
+  principal_arn = "${local.iam_user_arn_format}${each.key}"
 
   access_scope {
     type = "cluster"

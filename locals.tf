@@ -23,8 +23,19 @@ locals {
     ]
   ])
 
+eks_user_access = flatten([
+    for eks_role, iam_user_list in var.eks_iam_user_access : [
+      for iam_user in iam_user_list : {
+        user = iam_user
+        role = eks_role
+      }
+    ]
+  ])
+
+  iam_user_arn_format = "arn:aws:iam::${var.aws_account_number}:user/"
+
   user_role_policy_map = {
-    admin = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+    admin  = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
     editor = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
     viewer = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
   }
