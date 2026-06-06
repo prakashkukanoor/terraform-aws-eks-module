@@ -13,10 +13,10 @@ output "cluster_iam_role_name" {
   value       = aws_iam_role.cluster_role.name
 }
 
-output "cluster_certificate_authority_data" {
-  description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = aws_eks_cluster.this.certificate_authority[0].data
-}
+# output "cluster_certificate_authority_data" {
+#   description = "Base64 encoded certificate data required to communicate with the cluster"
+#   value       = aws_eks_cluster.this.certificate_authority[0].data
+# }
 
 output "node_group_name" {
   description = "Name of the EKS node group"
@@ -24,6 +24,6 @@ output "node_group_name" {
 }
 
 output "configure_kubectl" {
-  description = "Command to configure kubectl"
-  value       = "aws eks get-token --cluster-name ${aws_eks_cluster.this.name} | kubectl apply -f -"
+  description = "Command to configure kubectl to connect to EKS"
+  value       = "aws eks update-kubeconfig --region <region> --name ${local.cluster_full_name} --profile <profile>"
 }

@@ -3,25 +3,25 @@ variable "cluster_name" {
 }
 
 variable "environment" {
-    type = string
+  type = string
 }
 
 variable "team" {
-    type = string
+  type = string
 }
 
 variable "applications" {
-    type = map(object({
-      services = list(string)
-    }))
+  type = map(object({
+    services = list(string)
+  }))
 }
 
 variable "eks_version" {
-    type = string
+  type = string
 }
 
 variable "eks_private_subnets" {
-    type = list(string)
+  type = list(string)
 }
 
 variable "instance_type" {
@@ -41,11 +41,27 @@ variable "eks_worker_node_max_size" {
 }
 
 variable "endpoint_private_access" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "endpoint_public_access" {
-  type = bool
+  type    = bool
   default = false
+}
+
+variable "ami_type" {
+  type = string
+}
+
+variable "eks_iam_user_access" {
+  type = object({
+    admin  = list(string)
+    editor = list(string)
+    viewer = list(string)
+  })
+}
+
+variable "aws_account_number" {
+  type = string
 }

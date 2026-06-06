@@ -1,8 +1,8 @@
 resource "aws_eks_cluster" "this" {
-  name = "${var.cluster_name}-eks${local.eks_version_tag}-${var.environment}"
+  name = local.cluster_full_name
 
   access_config {
-    authentication_mode = "API"
+    authentication_mode                         = "API"
     bootstrap_cluster_creator_admin_permissions = true
   }
 
@@ -22,5 +22,5 @@ resource "aws_eks_cluster" "this" {
 
   tags = merge(
     local.common_tags,
-    {Name = "${var.cluster_name}-eks${local.eks_version_tag}-${var.environment}"})
+  { Name = local.cluster_full_name })
 }
