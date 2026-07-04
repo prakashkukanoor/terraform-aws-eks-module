@@ -12,6 +12,12 @@ resource "aws_launch_template" "eks_nodes" {
     name = aws_iam_instance_profile.eks_node_profile.name
   }
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required" # Enforces IMDSv2
+    http_put_response_hop_limit = 2          # Standard hop requirement for internal container networks
+  }
+
   user_data = base64encode(<<-EOT
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="BOUNDARY"
