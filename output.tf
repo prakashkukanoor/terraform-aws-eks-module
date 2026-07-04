@@ -25,5 +25,5 @@ output "node_group_name" {
 
 output "configure_kubectl" {
   description = "Command to configure kubectl to connect to EKS"
-  value       = "aws eks update-kubeconfig --region <region> --name ${local.cluster_full_name} --profile <profile>"
+  value       = "aws eks update-kubeconfig --region <region> --name ${local.cluster_full_name} --profile ${var.environment}"
 }
