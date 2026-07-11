@@ -1,6 +1,11 @@
 output "cluster_endpoint" {
-  description = "Endpoint for EKS control plane"
+  description = "EKS cluster endpoint"
   value       = aws_eks_cluster.this.endpoint
+}
+
+output "cluster_name" {
+  description = "EKS cluster name"
+  value       = aws_eks_cluster.this.name
 }
 
 output "cluster_security_group_id" {
@@ -21,6 +26,11 @@ output "cluster_iam_role_name" {
 output "node_group_name" {
   description = "Name of the EKS node group"
   value       = aws_autoscaling_group.eks_nodes.name
+}
+
+output "aws_autoscaling_group_id" {
+  description = "Name of the EKS node group"
+  value       = aws_autoscaling_group.eks_nodes.id
 }
 
 output "configure_kubectl" {
