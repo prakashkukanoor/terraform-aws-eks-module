@@ -54,6 +54,11 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
   role       = aws_iam_role.eks_node_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "worker_node_AmazonSSMManagedInstanceCore" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.eks_node_role.name
+}
+
 resource "aws_eks_access_entry" "std" {
   for_each = {for idx, user_role_obj in local.eks_user_access: user_role_obj.user => user_role_obj.role}
 
