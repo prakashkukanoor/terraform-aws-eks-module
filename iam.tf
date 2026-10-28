@@ -81,4 +81,8 @@ resource "aws_eks_access_policy_association" "std" {
   access_scope {
     type = "cluster"
   }
+  
+  depends_on = [
+    aws_eks_access_entry.std
+  ]
 }
